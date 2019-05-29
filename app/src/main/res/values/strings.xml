@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">GuessTheFairyTale</string>
+    <string name="main_activity_button_play">Graj</string>
+    <string name="game_activity_back_button">Powrót</string>
+    <string name="game_avtivity_text_good_answer">DOBRZE!</string>
+    <string name="game_avtivity_answer_bad">ŹLE!</string>
+    <string name="game_activity_text_score">Wynik</string>
+    <string name="tutorial_activity_text">Gra polega na odgadnięciu tytułu bajki, z której pochodzi puszczana piosenka.
+        Wyświetlane są 4 tytuły, każda runda trwa max 30 sekund i kończy się kiedy licznik czasu dojdzie do 0
+        lub gdy zostanie wybrana odpowiedź. Pomiędzy rundami jest 3 sekundowa przerwa, podczas której wyświetlana jest
+        odpowiedź. Na koniec rozgrywki wyświetlana jest ilość zdobytych punktów.
+    </string>
+    <string name="default_no_image_found">Nie znaleziono obrazu</string>
+    <string name="main_activity_button_tutorial">Instrukcja</string>
+    <string name="tutorial_activity_text_shake">Potrząśnij, aby wykluczyć dwie odpowiedzi</string>
+    <string name="tutorial_activity_text_proximity">Zasłoń telefon by włączyć pauzę, możesz ją włączać co 3 sekundy</string>
+</resources>
