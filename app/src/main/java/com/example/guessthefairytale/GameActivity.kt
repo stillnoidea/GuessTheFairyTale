@@ -18,6 +18,7 @@ import com.example.guessthefairytale.MainActivity.Companion.ROUNDS_NUMBER
 import com.example.guessthefairytale.logic.Game
 import com.squareup.seismic.ShakeDetector
 import kotlinx.android.synthetic.main.activity_game.*
+import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.random.Random
 
 class GameActivity : AppCompatActivity(), View.OnClickListener, SensorEventListener, ShakeDetector.Listener {
@@ -29,18 +30,19 @@ class GameActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
     private var shakeDetector: ShakeDetector? = null
     private var proximity: Sensor? = null
     private val countDownInterval: Long = 1000
-    private var pauseMoment: Long = 33
+    private var pauseMoment: Long = 32
     private var actualTime: Long = 0
     private var resumeTime: Long = 0
     private var roundsLeft = 0
     private var isPaused: Boolean = false
     private var wasShaken: Boolean = false
     private var isRound = false
-
+    private var isCounter: AtomicBoolean = AtomicBoolean(false)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_game)
+
 
         buttons.add(game_activity_button_answer1)
         buttons.add(game_activity_button_answer2)
@@ -58,6 +60,7 @@ class GameActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
         game_activity_button_back.isClickable = false
         game_activity_button_back.isVisible = false
 
+
         sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
         proximity = sensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY)
         shakeDetector = ShakeDetector(this)
@@ -72,6 +75,7 @@ class GameActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
     override fun onStop() {
         player.stop()
         counter.cancel()
+        isCounter.set(false)
         super.onStop()
     }
 
@@ -120,36 +124,44 @@ class GameActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
     }
 
     private fun countTime(time: Long) {
-        counter = object : CountDownTimer(time, countDownInterval) {
+        if (!isCounter.get()) {
+            isCounter.set(true)
+            counter = object : CountDownTimer(time, countDownInterval) {
 
-            override fun onTick(millisUntilFinished: Long) {
+                override fun onTick(millisUntilFinished: Long) {
 
-                if (isPaused) {
-                    resumeTime = millisUntilFinished
-                    pauseMoment = resumeTime / 1000
-                    cancel()
 
-                } else {
-                    val timeLeft = millisUntilFinished / 1000
-                    actualTime = timeLeft
-                    game_activity_text_time_counter.text = timeLeft.toString()
+                    if (isPaused) {
+                        resumeTime = millisUntilFinished
+                        pauseMoment = resumeTime / 1000
+                        cancel()
+                        isCounter.set(false)
 
-                    if (isRound && timeLeft == 10.toLong()) {
-                        changeCounterColor(R.color.colorAccentDark)
-                    }
-                    if (!isRound) {
-                        changeCounterColor(R.color.colorAccentDarkest)
+                    } else {
+                        val timeLeft = millisUntilFinished / 1000
+                        actualTime = timeLeft
+                        game_activity_text_time_counter.text = timeLeft.toString()
+
+                        if (isRound && timeLeft == 10.toLong()) {
+                            changeCounterColor(R.color.colorAccentDark)
+                        }
+                        if (!isRound) {
+                            changeCounterColor(R.color.colorAccentDarkest)
+                        }
                     }
                 }
-            }
 
-            override fun onFinish() {
-                counter.cancel()
-                visibilityButtons(true)
-                runNextRoundOrEndGame()
+                override fun onFinish() {
+
+
+                    counter.cancel()
+                    isCounter.set(false)
+                    visibilityButtons(true)
+                    runNextRoundOrEndGame()
+                }
             }
+            counter.start()
         }
-        counter.start()
     }
 
     private fun runNextRoundOrEndGame() {
@@ -179,6 +191,7 @@ class GameActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
             }
         }
         counter.cancel()
+        isCounter.set(false)
         isRound = false
         startBreak()
     }
@@ -205,7 +218,7 @@ class GameActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
     }
 
     private fun startRound() {
-        pauseMoment = 33
+        pauseMoment = 32
         shakeDetector!!.start(sensorManager)
         wasShaken = false
 
@@ -245,7 +258,7 @@ class GameActivity : AppCompatActivity(), View.OnClickListener, SensorEventListe
         if (sensor.type == Sensor.TYPE_PROXIMITY && isRound) {
             val distance = event.values[0]
             if (distance < 0.5) {
-                if (actualTime > 3 && pauseMoment - 2 > actualTime) pauseGame()
+                if (actualTime > 3 && pauseMoment - 1 > actualTime) pauseGame()
             } else {
                 resumeGame()
             }
