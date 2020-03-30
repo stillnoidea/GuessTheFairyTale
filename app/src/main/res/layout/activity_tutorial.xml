@@ -28,25 +28,18 @@
                     android:textSize="16sp"
                     android:layout_marginTop="@dimen/default_margin_top"
                     app:layout_constraintTop_toBottomOf="@+id/tutorial_activity_image_pikachu"/>
+
             <ImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/tutorial_image_clipart_height" app:srcCompat="@drawable/shake"
-                    android:id="@+id/tutorial_activity_image_shake"
-                    android:layout_weight="1" android:contentDescription="@string/default_no_image_found"/>
+                android:id="@+id/tutorial_activity_image_shake"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:contentDescription="@string/default_no_image_found"
+                app:srcCompat="@drawable/shake" />
             <TextView
                     android:text="@string/tutorial_activity_text_shake"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" android:id="@+id/tutorial_activity_text_shake"
-                    android:textAlignment="center"
-                    android:fontFamily="@font/architects_daughter"/>
-            <ImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/tutorial_image_clipart_height" app:srcCompat="@drawable/proximity"
-                    android:id="@+id/tutorial_activity_image_proximity" android:contentDescription="@string/default_no_image_found"/>
-            <TextView
-                    android:text="@string/tutorial_activity_text_proximity"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" android:id="@+id/tutorial_activity_text_proximity"
                     android:textAlignment="center"
                     android:fontFamily="@font/architects_daughter"/>
         </LinearLayout>
