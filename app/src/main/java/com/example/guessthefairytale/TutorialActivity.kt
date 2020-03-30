@@ -14,6 +14,4 @@ class TutorialActivity : AppCompatActivity() {
             onBackPressed()
         }
     }
-
-
 }
