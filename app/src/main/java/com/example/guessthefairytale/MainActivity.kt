@@ -13,11 +13,9 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         main_activity_button_play.setOnClickListener {
-            // Show the single choice list items on an alert dialog
-            showDialog()
+            showRoundNumbersDialog()
         }
         main_activity_button_tutorial.setOnClickListener {
-            // Show the single choice list items on an alert dialog
             goToTutorial()
         }
     }
@@ -28,39 +26,27 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-    // Method to show an alert dialog with single choice list items
-    private fun showDialog() {
-        // Late initialize an alert dialog object
+    private fun showRoundNumbersDialog() {
         lateinit var dialog: AlertDialog
-
-        // Initialize an array of colors
         val array = arrayOf("5", "10", "15")
-
-        // Initialize a new instance of alert dialog builder object
         val builder = AlertDialog.Builder(this)
 
-        // Set a title for alert dialog
         builder.setTitle("Wybierz liczbę rund")
 
         builder.setSingleChoiceItems(array, -1) { _, which ->
-
-
             dialog.dismiss()
-            play(array[which].toInt())
+            startSingleGame(array[which].toInt())
         }
 
-
-        // Initialize the AlertDialog using builder object
         dialog = builder.create()
 
-        // Finally, display the alert dialog
         dialog.show()
     }
 
 
-    fun play(number: Int) {
+    private fun startSingleGame(roundsNumber: Int) {
         val intent = Intent(this, GameActivity::class.java)
-        intent.putExtra(ROUNDS_NUMBER, number)
+        intent.putExtra(ROUNDS_NUMBER, roundsNumber)
         startActivity(intent)
     }
 
