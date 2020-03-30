@@ -15,7 +15,7 @@
             app:layout_constraintStart_toStartOf="parent"
             android:layout_marginStart="@dimen/default_margin_start"
             android:textColor="@color/colorAccentDarkest"
-            app:layout_constraintTop_toBottomOf="@+id/game_activity_text_answer_correctness"
+            app:layout_constraintTop_toBottomOf="@+id/game_activity_text_round_result"
             android:layout_marginTop="@dimen/default_margin_top" android:layout_marginEnd="@dimen/default_margin_end"
             app:layout_constraintEnd_toStartOf="@+id/game_activity_button_answer2"
             app:layout_constraintHorizontal_bias="0.4"/>
@@ -27,7 +27,7 @@
             app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="@dimen/default_margin_end"
             android:textColor="@color/colorAccentDarkest"
             android:layout_marginTop="@dimen/default_margin_top"
-            app:layout_constraintTop_toBottomOf="@+id/game_activity_text_answer_correctness"
+            app:layout_constraintTop_toBottomOf="@+id/game_activity_text_round_result"
             android:layout_marginStart="@dimen/default_margin_start" app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintHorizontal_bias="0.8"/>
     <Button
@@ -69,12 +69,17 @@
             android:id="@+id/game_activity_button_back" android:layout_marginTop="@dimen/default_margin_top"
             app:layout_constraintTop_toTopOf="parent" app:layout_constraintStart_toStartOf="parent"
             android:layout_marginStart="@dimen/default_margin_start" android:background="?attr/homeAsUpIndicator" android:onClick="goBack"/>
+
     <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/game_activity_text_answer_correctness" app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginStart="@dimen/default_margin_start"
-            app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="@dimen/default_margin_end" android:layout_marginTop="@dimen/big_margin_top"
-            app:layout_constraintTop_toBottomOf="@+id/game_activity_text_time_counter" android:textSize="24sp"
-            android:fontFamily="@font/architects_daughter"/>
+        android:id="@+id/game_activity_text_round_result"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/default_margin_start"
+        android:layout_marginTop="@dimen/big_margin_top"
+        android:layout_marginEnd="@dimen/default_margin_end"
+        android:fontFamily="@font/luckiest_guy"
+        android:textSize="30sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/game_activity_text_time_counter" />
 </androidx.constraintlayout.widget.ConstraintLayout>
