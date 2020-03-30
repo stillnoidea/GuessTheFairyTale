@@ -38,5 +38,4 @@ class Song():Serializable {
     fun played() {
         wasPlayed = true
     }
-
 }

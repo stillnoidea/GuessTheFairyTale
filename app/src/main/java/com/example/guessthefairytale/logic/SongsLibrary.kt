@@ -19,6 +19,7 @@ class SongsLibrary {
         val list = stream.bufferedReader(Charset.defaultCharset()).use {
             it.readLines()
         }
+
         for (line in list) {
             val text = line.split(",")
             val song = Song(text[0], text[1], text[2])
