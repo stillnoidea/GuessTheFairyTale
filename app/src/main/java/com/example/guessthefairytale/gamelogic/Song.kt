@@ -1,4 +1,4 @@
-package com.example.guessthefairytale.logic
+package com.example.guessthefairytale.gamelogic
 
 import java.io.Serializable
 
