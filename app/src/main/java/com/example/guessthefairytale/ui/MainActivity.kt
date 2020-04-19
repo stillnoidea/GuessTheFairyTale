@@ -20,6 +20,7 @@ class MainActivity : AppCompatActivity() {
             goToTutorial()
         }
 
+        setSupportActionBar(findViewById(R.id.main_toolbar))
         val user = intent.getStringExtra("user")
 
     }
