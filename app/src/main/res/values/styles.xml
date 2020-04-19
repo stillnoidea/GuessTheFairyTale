@@ -6,6 +6,11 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:navigationBarColor">@color/colorAccent</item>
+        <item name="android:titleTextColor">@color/colorFont</item>
+        <item name="android:textColor">@color/colorFont</item>
+        <item name="colorButtonNormal">@color/colorAccent</item>
+        <item name="actionMenuTextColor">@color/colorFont</item>
     </style>
 
 </resources>
