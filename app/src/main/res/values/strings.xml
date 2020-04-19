@@ -13,4 +13,6 @@
     <string name="default_no_image_found">Nie znaleziono obrazu</string>
     <string name="main_activity_button_tutorial">Instrukcja</string>
     <string name="tutorial_activity_text_shake">Potrząśnij, aby wykluczyć dwie odpowiedzi</string>
+    <string name="login_toolbar_button_register">Register</string>
+    <string name="login_button_text">Zaloguj</string>
 </resources>
