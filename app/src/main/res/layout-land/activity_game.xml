@@ -5,7 +5,7 @@
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".GameActivity" android:background="@color/colorPrimary">
+        tools:context=".ui.GameActivity" android:background="@color/colorPrimary">
 
     <Button
             android:text=""
@@ -14,7 +14,7 @@
             android:id="@+id/game_activity_button_answer1"
             app:layout_constraintStart_toStartOf="parent"
             android:layout_marginStart="@dimen/default_margin_start"
-            android:textColor="@color/colorAccentDarkest"
+            android:textColor="@color/colorFontDark"
             app:layout_constraintTop_toBottomOf="@+id/game_activity_text_round_result"
             android:layout_marginTop="@dimen/default_margin_top" android:layout_marginEnd="@dimen/default_margin_end"
             app:layout_constraintEnd_toStartOf="@+id/game_activity_button_answer2"
@@ -25,7 +25,7 @@
             android:layout_height="wrap_content"
             android:id="@+id/game_activity_button_answer2"
             app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="@dimen/default_margin_end"
-            android:textColor="@color/colorAccentDarkest"
+            android:textColor="@color/colorFontDark"
             android:layout_marginTop="@dimen/default_margin_top"
             app:layout_constraintTop_toBottomOf="@+id/game_activity_text_round_result"
             android:layout_marginStart="@dimen/default_margin_start" app:layout_constraintStart_toStartOf="parent"
@@ -39,7 +39,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginEnd="@dimen/default_margin_end" app:layout_constraintStart_toStartOf="parent"
             android:layout_marginStart="@dimen/default_margin_start"
-            android:textColor="@color/colorAccentDarkest" app:layout_constraintHorizontal_bias="0.8"/>
+            android:textColor="@color/colorFontDark" app:layout_constraintHorizontal_bias="0.8"/>
     <Button
             android:text=""
             android:layout_width="200dp"
@@ -47,7 +47,7 @@
             android:id="@+id/game_activity_button_answer4"
             app:layout_constraintStart_toStartOf="parent"
             android:layout_marginStart="@dimen/default_margin_start"
-            android:textColor="@color/colorAccentDarkest" android:layout_marginTop="@dimen/big_margin_top"
+            android:textColor="@color/colorFontDark" android:layout_marginTop="@dimen/big_margin_top"
             app:layout_constraintTop_toBottomOf="@+id/game_activity_button_answer1" android:layout_marginEnd="@dimen/default_margin_end"
             app:layout_constraintEnd_toStartOf="@+id/game_activity_button_answer3"
             app:layout_constraintHorizontal_bias="0.4"/>
@@ -60,7 +60,7 @@
             android:layout_marginStart="@dimen/default_margin_start"
             app:layout_constraintHorizontal_bias="0.503" android:textSize="72sp"
             android:fontFamily="@font/luckiest_guy"
-            android:textColor="@color/colorAccentDarkest" android:layout_marginTop="@dimen/default_margin_top"
+            android:textColor="@color/colorFontDark" android:layout_marginTop="@dimen/default_margin_top"
             app:layout_constraintTop_toTopOf="parent" android:layout_marginBottom="@dimen/default_margin_bottom"
             app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintVertical_bias="0.19999999"/>
     <Button
