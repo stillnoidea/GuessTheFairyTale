@@ -1,7 +1,8 @@
-package com.example.guessthefairytale
+package com.example.guessthefairytale.ui
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import com.example.guessthefairytale.R
 import kotlinx.android.synthetic.main.activity_tutorial.*
 
 class TutorialActivity : AppCompatActivity() {

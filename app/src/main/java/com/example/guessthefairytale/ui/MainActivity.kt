@@ -1,9 +1,10 @@
-package com.example.guessthefairytale
+package com.example.guessthefairytale.ui
 
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import com.example.guessthefairytale.R
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
@@ -18,6 +19,9 @@ class MainActivity : AppCompatActivity() {
         main_activity_button_tutorial.setOnClickListener {
             goToTutorial()
         }
+
+        val user = intent.getStringExtra("user")
+
     }
 
     private fun goToTutorial() {
