@@ -5,9 +5,12 @@ import android.os.Bundle
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.example.guessthefairytale.R
+import com.example.guessthefairytale.database.dto.User
 import kotlinx.android.synthetic.main.activity_main.*
 
+
 class MainActivity : AppCompatActivity() {
+    private var user = User("","","",0)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -21,7 +24,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         setSupportActionBar(findViewById(R.id.main_toolbar))
-        val user = intent.getStringExtra("user")
+        user = intent.getSerializableExtra("user") as User
 
     }
 
