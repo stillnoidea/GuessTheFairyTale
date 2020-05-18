@@ -6,20 +6,19 @@ import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 
 class FirebaseDatabaseManager {
-    private val database = Firebase.database
     private val KEY_USER = "user"
     private val KEY_GAME = "game"
+    private val database = Firebase.database.reference
 
     fun createUser(id: String, name: String, email: String) {
         val user = User(id, name, email, 0)
-        val res = database
-            .reference
-            .child(KEY_USER)
-            .child(id).setValue(user)
-        Log.e("result: ", res.result.toString())
-    }
 
-    fun addReference() {
-        database.reference.child(KEY_USER)
+        database.child("users").child(user.id).setValue(user)
+            .addOnSuccessListener {
+                Log.i("Firebase", "Success")
+            }
+            .addOnFailureListener {
+                Log.i("Firebase", "Error")
+            }
     }
 }
