@@ -37,7 +37,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun startMultiGame() {
-        Toast.makeText(this, "Not yet implemented", Toast.LENGTH_LONG).show()
+        val intent = Intent(this, Multiplayer::class.java)
+        intent.putExtra("user", user)
+        startActivity(intent)
     }
 
     private fun goToTutorial() {
