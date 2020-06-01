@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">GuessTheFairyTale</string>
-    <string name="main_activity_button_play">Graj</string>
+    <string name="main_activity_button_multi">Gra wieloosobowa</string>
+    <string name="main_activity_button_single">Gra pojedyncza</string>
     <string name="game_activity_back_button">Powrót</string>
     <string name="game_avtivity_answer_good">DOBRZE!</string>
     <string name="game_avtivity_answer_bad">ŹLE!</string>
@@ -12,6 +13,7 @@
     </string>
     <string name="default_no_image_found">Nie znaleziono obrazu</string>
     <string name="main_activity_button_tutorial">Instrukcja</string>
+    <string name="main_activity_button_logout">Wyloguj</string>
     <string name="tutorial_activity_text_shake">Potrząśnij, aby wykluczyć dwie odpowiedzi</string>
     <string name="login_toolbar_button_register">Register</string>
     <string name="login_button_text">Zaloguj</string>

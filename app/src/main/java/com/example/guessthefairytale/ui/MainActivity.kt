@@ -2,10 +2,12 @@ package com.example.guessthefairytale.ui
 
 import android.content.Intent
 import android.os.Bundle
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.example.guessthefairytale.R
 import com.example.guessthefairytale.database.dto.User
+import com.firebase.ui.auth.AuthUI
 import kotlinx.android.synthetic.main.activity_main.*
 
 
@@ -16,11 +18,17 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        main_activity_button_play.setOnClickListener {
+        main_activity_button_single.setOnClickListener {
             showRoundNumbersDialog()
+        }
+        main_activity_button_multi.setOnClickListener {
+            startMultiGame()
         }
         main_activity_button_tutorial.setOnClickListener {
             goToTutorial()
+        }
+        main_activity_button_logout.setOnClickListener {
+            logout()
         }
 
         setSupportActionBar(findViewById(R.id.main_toolbar))
@@ -28,11 +36,14 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+    private fun startMultiGame() {
+        Toast.makeText(this, "Not yet implemented", Toast.LENGTH_LONG).show()
+    }
+
     private fun goToTutorial() {
         val intent = Intent(this, TutorialActivity::class.java)
         startActivity(intent)
     }
-
 
     private fun showRoundNumbersDialog() {
         lateinit var dialog: AlertDialog
@@ -51,11 +62,19 @@ class MainActivity : AppCompatActivity() {
         dialog.show()
     }
 
-
     private fun startSingleGame(roundsNumber: Int) {
         val intent = Intent(this, GameActivity::class.java)
         intent.putExtra(ROUNDS_NUMBER, roundsNumber)
         startActivity(intent)
+    }
+
+    private fun logout() {
+        AuthUI.getInstance()
+            .signOut(this)
+            .addOnCompleteListener {
+                val intent = Intent(this, LoginActivity::class.java)
+                startActivity(intent)
+            }
     }
 
     companion object {

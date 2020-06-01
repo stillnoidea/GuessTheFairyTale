@@ -20,7 +20,26 @@
         app:titleTextColor="@color/colorFont" />
 
     <Button
-        android:id="@+id/main_activity_button_play"
+        android:id="@+id/main_activity_button_multi"
+        style="@style/Widget.AppCompat.Button.Borderless"
+        android:layout_width="@dimen/main_button_width"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/default_margin_start"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="@dimen/default_margin_end"
+        android:background="@drawable/main_button"
+        android:fontFamily="@font/architects_daughter"
+        android:text="@string/main_activity_button_multi"
+        android:textColor="@color/colorFont"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/main_activity_button_single" />
+
+    <Button
+        android:id="@+id/main_activity_button_single"
         style="@style/Widget.AppCompat.Button.Borderless"
         android:layout_width="@dimen/main_button_width"
         android:layout_height="wrap_content"
@@ -29,17 +48,17 @@
         android:layout_marginBottom="@dimen/default_margin_bottom"
         android:background="@drawable/main_button"
         android:fontFamily="@font/architects_daughter"
-        android:text="@string/main_activity_button_play"
+        android:text="@string/main_activity_button_single"
         android:textColor="@color/colorFont"
         android:textSize="18sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
 
-        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_bias="0.503"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/main_toolbar"
-        app:layout_constraintVertical_bias="0.3" />
+        app:layout_constraintVertical_bias="0.19" />
 
     <Button
         android:id="@+id/main_activity_button_tutorial"
@@ -56,5 +75,23 @@
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/main_activity_button_play" />
+        app:layout_constraintTop_toBottomOf="@+id/main_activity_button_multi" />
+
+    <Button
+        android:id="@+id/main_activity_button_logout"
+        android:layout_width="@dimen/main_button_width"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/default_margin_start"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="@dimen/default_margin_end"
+        android:background="@drawable/main_button"
+        android:fontFamily="@font/architects_daughter"
+        android:text="@string/main_activity_button_logout"
+        android:textColor="@color/colorFont"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.496"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/main_activity_button_tutorial" />
 </androidx.constraintlayout.widget.ConstraintLayout>

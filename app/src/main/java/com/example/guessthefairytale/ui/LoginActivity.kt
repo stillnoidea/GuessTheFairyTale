@@ -16,7 +16,6 @@ import kotlinx.android.synthetic.main.activity_login.*
 
 class LoginActivity : AppCompatActivity() {
     val RC_SIGN_IN = 200
-
     private lateinit var auth: FirebaseAuth
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -30,7 +29,7 @@ class LoginActivity : AppCompatActivity() {
         val currentUser = auth.currentUser
         if (currentUser != null) {
             val intent = Intent(this, MainActivity::class.java)
-            val user = User(currentUser.uid, currentUser.displayName!!, currentUser.email!!,0)
+            val user = User(currentUser.uid, currentUser.displayName!!, currentUser.email!!, 0)
             intent.putExtra("user", user)
             startActivity(intent)
         }
@@ -43,6 +42,17 @@ class LoginActivity : AppCompatActivity() {
 
     public override fun onStart() {
         super.onStart()
+
+//Check auth on Activity start
+//        auth.currentUser?.let {
+//
+//            val intent = Intent(this, MainActivity::class.java)
+//            val user = User(it.uid, it.displayName!!, it.email!!,0)
+//            database.child("users").child(it.uid).setValue(user)
+//            intent.putExtra("user", user)
+//            startActivity(intent)
+//            finish()
+//        }
     }
 
     private fun startSigningIn() {
@@ -67,8 +77,8 @@ class LoginActivity : AppCompatActivity() {
             when {
                 resultCode == Activity.RESULT_OK -> {
 
-                    auth.currentUser.let{
-                        val currentUser = User(it!!.uid, it.displayName!!, it.email!!,0)
+                    auth.currentUser.let {
+                        val currentUser = User(it!!.uid, it.displayName!!, it.email!!, 0)
                         if (response!!.isNewUser) {
                             FirebaseDatabaseManager().createUser(it.uid, it.displayName!!, it.email!!)
                         }
