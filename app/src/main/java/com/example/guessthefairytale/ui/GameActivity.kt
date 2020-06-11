@@ -1,59 +1,48 @@
 package com.example.guessthefairytale.ui
 
-import android.content.Context
 import android.content.Intent
-import android.hardware.SensorManager
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.view.View
+import android.view.View.VISIBLE
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.example.guessthefairytale.R
 import com.example.guessthefairytale.gamelogic.Game
 import com.example.guessthefairytale.ui.MainActivity.Companion.ROUNDS_NUMBER
-import com.squareup.seismic.ShakeDetector
 import kotlinx.android.synthetic.main.activity_game.*
-import kotlin.random.Random
 
-class GameActivity : AppCompatActivity(), View.OnClickListener, ShakeDetector.Listener {
-    private val game: Game = Game()
+
+abstract class GameActivity : AppCompatActivity(), View.OnClickListener {
+    val game: Game = Game()
     private lateinit var counter: CountDownTimer
-    private var buttons: ArrayList<Button> = arrayListOf()
-    private var player: MediaPlayer = MediaPlayer()
-    private lateinit var sensorManager: SensorManager
-    private var shakeDetector: ShakeDetector? = null
+    var buttons: ArrayList<Button> = arrayListOf()
+    var player: MediaPlayer = MediaPlayer()
     private val countDownInterval: Long = 1000
     private var roundsLeft = 0
-    private var wasShaken = false
     private var isRound = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_game)
-        sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
-        shakeDetector = ShakeDetector(this)
 
-        game_activity_button_back.isClickable = false
-        game_activity_button_back.visibility = View.INVISIBLE
-
-        addAnswerButtons()
-        for (button in buttons) {
-            button.setOnClickListener(this)
-
-        }
-        initializeRoundsNumber()
-        game.initializeLib(this)
+//        addAnswerButtons()
+//        for (button in buttons) {
+//            button.setOnClickListener(this)
+//        }
+//        initializeRoundsNumber()
+//        game.initializeLib(this)
     }
 
-    private fun initializeRoundsNumber() {
+    fun initializeRoundsNumber() {
         val roundsNumber = intent.getIntExtra(ROUNDS_NUMBER, 10)
         game.setRoundsNumber(roundsNumber)
         roundsLeft = roundsNumber
     }
 
-    private fun addAnswerButtons() {
+    fun addAnswerButtons() {
         buttons.add(game_activity_button_answer1)
         buttons.add(game_activity_button_answer2)
         buttons.add(game_activity_button_answer3)
@@ -70,7 +59,7 @@ class GameActivity : AppCompatActivity(), View.OnClickListener, ShakeDetector.Li
         buttonsVisibility(View.INVISIBLE)
     }
 
-    private fun countTime(time: Long) {
+    fun countTime(time: Long) {
         counter = object : CountDownTimer(time, countDownInterval) {
 
             override fun onTick(millisUntilFinished: Long) {
@@ -99,7 +88,7 @@ class GameActivity : AppCompatActivity(), View.OnClickListener, ShakeDetector.Li
         game_activity_text_time_counter.setTextColor(ContextCompat.getColor(applicationContext, id))
     }
 
-    private fun buttonsVisibility(isVisible: Int) {
+    fun buttonsVisibility(isVisible: Int) {
         for (button in buttons) {
             button.visibility = isVisible
         }
@@ -114,19 +103,19 @@ class GameActivity : AppCompatActivity(), View.OnClickListener, ShakeDetector.Li
         }
     }
 
-    private fun endGame() {
-        shakeDetector!!.stop()
+    open fun endGame() {
         buttonsVisibility(View.INVISIBLE)
-        game_activity_button_back.isClickable = true
-        game_activity_button_back.visibility = View.VISIBLE
+//        game_activity_button_back.isClickable = true
+//        game_activity_button_back.visibility = VISIBLE
+//        game_activity_image_play_again.visibility = VISIBLE
         displayScore()
     }
 
-    private fun displayScore() {
+    fun displayScore() {
         changeCounterColor(R.color.colorGoodAnswer)
         game_activity_text_time_counter.text = getString(R.string.game_activity_text_score)
         game_activity_text_time_counter.textSize = 40F
-        game_activity_text_round_result.textSize = 130F
+        game_activity_text_round_result.textSize = 120F
         setRoundResultText(game.getScore().toString(),
             R.color.colorGoodAnswer
         )
@@ -148,83 +137,80 @@ class GameActivity : AppCompatActivity(), View.OnClickListener, ShakeDetector.Li
         }
     }
 
-    private fun startBreak() {
-        shakeDetector!!.stop()
-        buttonsVisibility(View.VISIBLE)
+    open fun startBreak() {
+        buttonsVisibility(VISIBLE)
         buttonsBlockade(true)
         player.stop()
         sumUpRound()
         countTime(game.getBreakTime().toLong())
     }
 
-    private fun buttonsBlockade(isBlocked: Boolean) {
+    fun buttonsBlockade(isBlocked: Boolean) {
         for (button in buttons) {
             button.isClickable = !isBlocked
         }
     }
 
-    private fun sumUpRound() {
-        if (isAnswerCorrect()) {
+    fun sumUpRound() {
+        val isAnswerCorrect = isAnswerCorrect()
+        if (isAnswerCorrect==true) {
             game.addPoints(getPointsAmount())
             setRoundResultText(getString(R.string.game_avtivity_answer_good),
                 R.color.colorGoodAnswer
             )
-            getSelectedButton().setBackgroundColor(ContextCompat.getColor(applicationContext,
-                R.color.colorGoodAnswer
-            ))
+            getSelectedButton()!!.background = resources.getDrawable(R.drawable.answers_buttons_good_answer,null)
+        } else if (isAnswerCorrect==false){
+            setRoundResultText(getString(R.string.game_avtivity_answer_bad),
+                R.color.colorBadAnswer
+            )
+            getSelectedButton()!!.background = resources.getDrawable(R.drawable.answers_buttons_bad_answer,null)
+            buttons.find { x -> x.text == game.getActualSong()!!.getFairyTale() }!!
+                .background = resources.getDrawable(R.drawable.answers_buttons_good_answer,null)
         } else {
             setRoundResultText(getString(R.string.game_avtivity_answer_bad),
                 R.color.colorBadAnswer
             )
-            getSelectedButton().setBackgroundColor(ContextCompat.getColor(applicationContext,
-                R.color.colorBadAnswer
-            ))
             buttons.find { x -> x.text == game.getActualSong()!!.getFairyTale() }!!
-                .setBackgroundColor(ContextCompat.getColor(applicationContext,
-                    R.color.colorGoodAnswer
-                ))
+                .background = resources.getDrawable(R.drawable.answers_buttons_good_answer,null)
         }
     }
 
-    private fun isAnswerCorrect(): Boolean {
-        return getSelectedButton().text == game.getActualSong()!!.getFairyTale()
-    }
-
-    private fun getPointsAmount(): Double {
-        var point = 1.0
-        if (wasShaken) {
-            point = 0.5
+    private fun isAnswerCorrect(): Boolean? {
+        val selectedButton =getSelectedButton()
+        return if(selectedButton==null){
+            null
+        }else{
+            selectedButton.text == game.getActualSong()!!.getFairyTale()
         }
-        return point
     }
 
-    private fun getSelectedButton(): Button {
-        return buttons.find { x -> x.isSelected }!!
+    open fun getPointsAmount(): Double {
+        return 1.0
     }
 
-    private fun startRound() {
+    private fun getSelectedButton(): Button? {
+        return buttons.find { x -> x.isSelected }
+    }
+
+    open fun startRound() {
         prepareButtonAndTextsAfterBreak()
-        shakeDetector!!.start(sensorManager)
-        wasShaken = false
         buttonsBlockade(false)
-        buttonsVisibility(View.VISIBLE)
+        buttonsVisibility(VISIBLE)
 
         initializeRound()
         player.start()
         countTime(game.getRoundTime().toLong())
     }
 
-    private fun prepareButtonAndTextsAfterBreak() {
+    fun prepareButtonAndTextsAfterBreak() {
         for (button in buttons) {
-            button.setBackgroundColor(ContextCompat.getColor(applicationContext,
-                R.color.colorPrimaryDark
-            ))
+            button.background = resources.getDrawable(R.drawable.answers_buttons,null)
             button.isSelected = false
         }
         game_activity_text_round_result.text = ""
     }
 
-    private fun initializeRound() {
+    fun initializeRound() {
         val answers = game.initializeRound()
         val name = game.getActualSong()!!.getFilePath()
         player = MediaPlayer.create(applicationContext, resources.getIdentifier(name, "raw", packageName))
@@ -249,10 +235,6 @@ class GameActivity : AppCompatActivity(), View.OnClickListener, ShakeDetector.Li
         super.onRestart()
     }
 
-    fun goBack(v: View) {
-        onBackPressed()
-    }
-
     override fun onClick(v: View?) {
         buttons.find { x -> x.id == v!!.id }!!.isSelected = true
         counter.cancel()
@@ -260,22 +242,4 @@ class GameActivity : AppCompatActivity(), View.OnClickListener, ShakeDetector.Li
         startBreak()
     }
 
-    override fun hearShake() {
-        if (!wasShaken) {
-            wasShaken = true
-            var iteration = 0
-
-            while (iteration < 2) {
-                val index = Random.nextInt(4)
-                val button = buttons[index]
-                if (button.text != game.getActualSong()!!.getFairyTale() && button.isClickable) {
-                    button.isClickable = false
-                    button.setBackgroundColor(ContextCompat.getColor(applicationContext,
-                        R.color.colorButtonInactive
-                    ))
-                    iteration++
-                }
-            }
-        }
-    }
 }

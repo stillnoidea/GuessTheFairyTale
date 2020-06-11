@@ -8,46 +8,64 @@
         tools:context=".ui.GameActivity" android:background="@color/colorPrimary">
 
     <Button
-            android:text=""
-            android:layout_width="@dimen/game_button_size"
-            android:layout_height="wrap_content"
-            android:id="@+id/game_activity_button_answer1"
-            app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginStart="@dimen/default_margin_start" app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="@dimen/default_margin_end"
-            app:layout_constraintHorizontal_bias="0.501"
-            android:textColor="@color/colorFontDark" android:layout_marginTop="@dimen/big_margin_top"
-            app:layout_constraintTop_toBottomOf="@+id/game_activity_text_round_result"/>
+        android:id="@+id/game_activity_button_answer1"
+        android:layout_width="@dimen/game_button_size"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/default_margin_start"
+        android:layout_marginTop="@dimen/big_margin_top"
+        android:layout_marginEnd="@dimen/default_margin_end"
+        android:background="@drawable/answers_buttons"
+        android:shadowColor="@color/colorButtonsShade"
+        android:text=""
+        android:textColor="@color/colorFontDark"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.501"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/game_activity_text_round_result" />
+
     <Button
-            android:text=""
-            android:layout_width="@dimen/game_button_size"
-            android:layout_height="wrap_content"
-            android:id="@+id/game_activity_button_answer2"
-            android:layout_marginTop="@dimen/big_margin_top" app:layout_constraintTop_toBottomOf="@+id/game_activity_button_answer1"
-            app:layout_constraintStart_toStartOf="parent" android:layout_marginStart="@dimen/default_margin_start"
-            app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="@dimen/default_margin_end"
-            app:layout_constraintHorizontal_bias="0.501"
-            android:textColor="@color/colorFontDark"/>
+        android:id="@+id/game_activity_button_answer2"
+        android:layout_width="@dimen/game_button_size"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/default_margin_start"
+        android:layout_marginTop="@dimen/big_margin_top"
+        android:layout_marginEnd="@dimen/default_margin_end"
+        android:background="@drawable/answers_buttons"
+        android:text=""
+        android:textColor="@color/colorFontDark"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.501"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/game_activity_button_answer1" />
+
     <Button
-            android:text=""
-            android:layout_width="@dimen/game_button_size"
-            android:layout_height="wrap_content"
-            android:id="@+id/game_activity_button_answer3" android:layout_marginTop="@dimen/big_margin_top"
-            app:layout_constraintTop_toBottomOf="@+id/game_activity_button_answer2"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginEnd="@dimen/default_margin_end" app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginStart="@dimen/default_margin_start"
-            android:textColor="@color/colorFontDark"/>
+        android:id="@+id/game_activity_button_answer3"
+        android:layout_width="@dimen/game_button_size"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/default_margin_start"
+        android:layout_marginTop="@dimen/big_margin_top"
+        android:layout_marginEnd="@dimen/default_margin_end"
+        android:background="@drawable/answers_buttons"
+        android:text=""
+        android:textColor="@color/colorFontDark"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/game_activity_button_answer2" />
+
     <Button
-            android:text=""
-            android:layout_width="@dimen/game_button_size"
-            android:layout_height="wrap_content"
-            android:id="@+id/game_activity_button_answer4"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginEnd="@dimen/default_margin_end" app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginStart="@dimen/default_margin_start"
-            app:layout_constraintHorizontal_bias="0.501"
-            android:layout_marginTop="@dimen/big_margin_top" app:layout_constraintTop_toBottomOf="@+id/game_activity_button_answer3"
-            android:textColor="@color/colorFontDark"/>
+        android:id="@+id/game_activity_button_answer4"
+        android:layout_width="@dimen/game_button_size"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/default_margin_start"
+        android:layout_marginTop="@dimen/big_margin_top"
+        android:layout_marginEnd="@dimen/default_margin_end"
+        android:background="@drawable/answers_buttons"
+        android:text=""
+        android:textColor="@color/colorFontDark"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.501"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/game_activity_button_answer3" />
     <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -60,12 +78,6 @@
             android:textColor="@color/colorFontDark" android:layout_marginTop="@dimen/default_margin_top"
             app:layout_constraintTop_toTopOf="parent" android:layout_marginBottom="@dimen/default_margin_bottom"
             app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintVertical_bias="0.19999999"/>
-    <Button
-            android:layout_width="@dimen/back_button_size"
-            android:layout_height="@dimen/back_button_size"
-            android:id="@+id/game_activity_button_back" android:layout_marginTop="@dimen/default_margin_top"
-            app:layout_constraintTop_toTopOf="parent" app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginStart="@dimen/default_margin_start" android:background="?attr/homeAsUpIndicator" android:onClick="goBack"/>
 
     <TextView
         android:id="@+id/game_activity_text_round_result"
@@ -79,5 +91,15 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/game_activity_text_time_counter" />
+
+    <ImageView
+        android:id="@+id/game_activity_image_play_again"
+        android:layout_width="wrap_content"
+        android:layout_height="315dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:srcCompat="@drawable/pikachu_play_again"
+        android:contentDescription="" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

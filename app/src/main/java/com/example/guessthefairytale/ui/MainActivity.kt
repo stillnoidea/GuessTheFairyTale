@@ -65,7 +65,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun startSingleGame(roundsNumber: Int) {
-        val intent = Intent(this, GameActivity::class.java)
+        val intent = Intent(this, Singleplayer::class.java)
         intent.putExtra(ROUNDS_NUMBER, roundsNumber)
         startActivity(intent)
     }
