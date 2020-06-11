@@ -1,5 +1,5 @@
 package com.example.guessthefairytale.database.dto
 
 interface DatabaseCallback {
-    fun onCallback(value: Any)
+    fun onCallback(value: Any, sndValue: Any = 0)
 }
