@@ -4,11 +4,14 @@ import android.content.ContentValues.TAG
 import android.util.Log
 import com.example.guessthefairytale.database.dto.DatabaseCallback
 import com.example.guessthefairytale.database.dto.GameChallenge
+import com.example.guessthefairytale.database.dto.GameDTO
 import com.example.guessthefairytale.database.dto.User
+import com.example.guessthefairytale.gamelogic.Round
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
+import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 
 class FirebaseDatabaseManager {
@@ -18,30 +21,19 @@ class FirebaseDatabaseManager {
 
     fun createUser(id: String, name: String, email: String) {
         val user = User(id, name, email, 0)
-
         database.child("users").child(user.id).setValue(user)
-            .addOnSuccessListener {
-                Log.i("Firebase", "Success")
-            }
-            .addOnFailureListener {
-                Log.i("Firebase", "Error")
-            }
     }
 
     fun findGameChallenge(user: User, callback: DatabaseCallback) {
-        var result = false
+        var result: String?
         val challengeListener = object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
-                for (gameChallenge in dataSnapshot.children) {
-                    val gc = gameChallenge.value as HashMap<String, String>
-                    if (gc["playerTwoId"] == "") {
-                        val game = GameChallenge(gc["playerOneId"]!!, user.id)
-                        database.child("gameRoom").child(gameChallenge.key!!).setValue(game)
-                        result = true
-                        break
-                    }
+                result = iterateThrowGames(user, dataSnapshot)
+                if (result == null) {
+                    callback.onCallback("")
+                } else {
+                    callback.onCallback(result!!)
                 }
-                callback.onCallback(result)
             }
 
             override fun onCancelled(databaseError: DatabaseError) {
@@ -52,7 +44,7 @@ class FirebaseDatabaseManager {
         val gameRoomListener = (object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 if (!dataSnapshot.hasChild("gameRoom")) {
-                    callback.onCallback(result)
+                    callback.onCallback("")
                 } else {
                     database.child("gameRoom").addListenerForSingleValueEvent(challengeListener)
                 }
@@ -62,22 +54,58 @@ class FirebaseDatabaseManager {
                 Log.w(TAG, "loadPost:onCancelled", databaseError.toException())
             }
         })
-
         database.addListenerForSingleValueEvent(gameRoomListener)
+    }
+
+    private fun iterateThrowGames(user: User, dataSnapshot: DataSnapshot): String? {
+        for (gameChallenge in dataSnapshot.children) {
+            val gc = gameChallenge.value as HashMap<String, String>
+            if (gc["playerTwoId"] == "") {
+                val game = GameChallenge(gc["playerOneId"]!!, user.id)
+                database.child("gameRoom").child(gameChallenge.key!!).setValue(game)
+                return gc["playerOneId"]!!
+            }
+        }
+        return null
     }
 
     fun addGameChallenge(user: User, callback: DatabaseCallback) {
         val gc = GameChallenge(user.id, "")
-        database.child("gameRoom").child(user.id).setValue(gc)
 
-        val secondPlayerListener = (object : ValueEventListener {
+
+        database.child("gameRoom").child(user.id).setValue(gc).addOnCompleteListener {
+            database.child("gameRoom").child(user.id).addValueEventListener(object : ValueEventListener {
+                override fun onDataChange(dataSnapshot: DataSnapshot) {
+                    val match = dataSnapshot.value as HashMap<String, String>
+                    if (match["playerTwoId"] != "") {
+                        database.child("gameRoom").child(user.id).removeValue()
+                        database.child("gameRoom").child(user.id).removeEventListener(this)
+                        callback.onCallback(true)
+                    } else {
+                        callback.onCallback(false)
+                    }
+                }
+
+                override fun onCancelled(databaseError: DatabaseError) {
+                    Log.w(TAG, "loadPost:onCancelled", databaseError.toException())
+                }
+            })
+        }
+    }
+
+    fun uploadGameData(gameData: GameDTO, userID: String) {
+        database.child("game").child(userID).setValue(gameData)
+    }
+
+    fun listenForGameData(playerOneId: String, callback: DatabaseCallback) {
+        val gameDataListener = (object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
-                val match = dataSnapshot.child(user.id).value as HashMap<String, String>
-                if (match["playerTwoId"]!="") {
-                    database.child("gameRoom").child(user.id).removeValue()
-                    callback.onCallback(true)
-                } else {
-                    callback.onCallback(false)
+                if(dataSnapshot.value!=null){
+                    print(dataSnapshot)
+                    val dbData = dataSnapshot.getValue<GameDTO>()
+                    val round = dataSnapshot.child("rounds").getValue<ArrayList<Round>>()
+                    dbData!!.rounds = round!!
+                    callback.onCallback(dbData, dataSnapshot.key!!)
                 }
             }
 
@@ -85,7 +113,6 @@ class FirebaseDatabaseManager {
                 Log.w(TAG, "loadPost:onCancelled", databaseError.toException())
             }
         })
-
-        database.child("gameRoom").addListenerForSingleValueEvent(secondPlayerListener);
+        database.child("game").child(playerOneId).addValueEventListener(gameDataListener)
     }
 }
