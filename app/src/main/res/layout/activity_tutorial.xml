@@ -45,18 +45,38 @@
         </LinearLayout>
     </ScrollView>
     <Button
-            android:layout_width="@dimen/back_button_size"
-            android:layout_height="@dimen/back_button_size"
-            android:id="@+id/tutorial_activity_back_button" android:layout_marginTop="@dimen/default_margin_top"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent" android:layout_marginStart="@dimen/default_margin_start"
-            style="@style/Widget.AppCompat.Button.Borderless" android:background="?attr/homeAsUpIndicator"/>
+        android:id="@+id/game_activity_button_back"
+        android:layout_width="33dp"
+        android:layout_height="33dp"
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/back_arrow"
+        app:layout_constraintBottom_toBottomOf="@+id/game_toolbar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/game_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorAccent"
+        android:minHeight="?attr/actionBarSize"
+        android:theme="@style/AppTheme"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:title="Instrukcja"
+        app:titleTextColor="@color/colorFont" />
+
     <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="@dimen/tutorial_image_pikachu_height" app:srcCompat="@drawable/pikachu"
-            android:id="@+id/tutorial_activity_image_pikachu" android:layout_marginTop="@dimen/default_margin_top"
-            app:layout_constraintTop_toBottomOf="@+id/tutorial_activity_back_button"
-            app:layout_constraintStart_toStartOf="parent" android:layout_marginStart="@dimen/default_margin_start"
-            app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="@dimen/default_margin_end"
-            android:contentDescription="@string/default_no_image_found"/>
+        android:id="@+id/tutorial_activity_image_pikachu"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/tutorial_image_pikachu_height"
+        android:layout_marginStart="@dimen/default_margin_start"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="@dimen/default_margin_end"
+        android:contentDescription="@string/default_no_image_found"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/game_toolbar"
+        app:srcCompat="@drawable/pikachu" />
 </androidx.constraintlayout.widget.ConstraintLayout>

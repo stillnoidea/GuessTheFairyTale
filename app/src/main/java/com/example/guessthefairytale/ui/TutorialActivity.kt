@@ -11,7 +11,7 @@ class TutorialActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_tutorial)
 
-        tutorial_activity_back_button.setOnClickListener {
+        game_activity_button_back.setOnClickListener {
             onBackPressed()
         }
     }
