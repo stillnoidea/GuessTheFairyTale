@@ -7,10 +7,15 @@
     android:background="@color/colorPrimary"
     tools:context=".ui.Multiplayer">
 
-    <include android:id="@+id/game_layout"
+    <include
+        android:id="@+id/game_layout"
+        layout="@layout/activity_game"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        layout="@layout/activity_game" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/game_activity_button_back"
