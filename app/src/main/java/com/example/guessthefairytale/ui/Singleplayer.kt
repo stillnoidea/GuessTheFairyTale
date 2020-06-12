@@ -9,7 +9,7 @@ import com.squareup.seismic.ShakeDetector
 import kotlinx.android.synthetic.main.activity_game.*
 import kotlin.random.Random
 
-class Singleplayer : GameActivity(),ShakeDetector.Listener {
+class Singleplayer : GameActivity(), ShakeDetector.Listener {
     private lateinit var sensorManager: SensorManager
     private var shakeDetector: ShakeDetector? = null
     private var wasShaken = false
@@ -32,6 +32,10 @@ class Singleplayer : GameActivity(),ShakeDetector.Listener {
         super.game.initializeLib(this)
     }
 
+    override fun onStart() {
+        super.onStart()
+        super.startGame()
+    }
 
     override fun endGame() {
         shakeDetector!!.stop()
@@ -75,6 +79,12 @@ class Singleplayer : GameActivity(),ShakeDetector.Listener {
         onBackPressed()
     }
 
+    override fun onStop() {
+        super.onStop()
+        player.release()
+        counter.cancel()
+    }
+
     override fun hearShake() {
         if (!wasShaken) {
             wasShaken = true
@@ -85,7 +95,7 @@ class Singleplayer : GameActivity(),ShakeDetector.Listener {
                 val button = super.buttons[index]
                 if (button.text != game.getActualSong()!!.getFairyTale() && button.isClickable) {
                     button.isClickable = false
-                    button.background = resources.getDrawable(R.drawable.answers_buttons_diabled,null)
+                    button.background = resources.getDrawable(R.drawable.answers_buttons_diabled, null)
                     iteration++
                 }
             }
