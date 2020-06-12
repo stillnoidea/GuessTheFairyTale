@@ -17,23 +17,18 @@ import kotlinx.android.synthetic.main.activity_game.*
 
 abstract class GameActivity : AppCompatActivity(), View.OnClickListener {
     val game: Game = Game()
-    private lateinit var counter: CountDownTimer
+    lateinit var counter: CountDownTimer
     var buttons: ArrayList<Button> = arrayListOf()
-    var player: MediaPlayer = MediaPlayer()
+    lateinit var player: MediaPlayer
     private val countDownInterval: Long = 1000
-    private var roundsLeft = 0
-    private var isRound = false
+    var roundsLeft = 0
+    var isRound = false
+    var isCounterInitialized: Boolean = false
+    var isPlayerInitialized: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_game)
-
-//        addAnswerButtons()
-//        for (button in buttons) {
-//            button.setOnClickListener(this)
-//        }
-//        initializeRoundsNumber()
-//        game.initializeLib(this)
     }
 
     fun initializeRoundsNumber() {
@@ -49,17 +44,13 @@ abstract class GameActivity : AppCompatActivity(), View.OnClickListener {
         buttons.add(game_activity_button_answer4)
     }
 
-    override fun onStart() {
-        startGame()
-        super.onStart()
-    }
-
-    private fun startGame() {
+    fun startGame() {
         countTime(game.getBreakTime().toLong())
         buttonsVisibility(View.INVISIBLE)
     }
 
     fun countTime(time: Long) {
+        isCounterInitialized = true
         counter = object : CountDownTimer(time, countDownInterval) {
 
             override fun onTick(millisUntilFinished: Long) {
@@ -84,7 +75,7 @@ abstract class GameActivity : AppCompatActivity(), View.OnClickListener {
         }
     }
 
-    private fun changeCounterColor(id: Int) {
+    fun changeCounterColor(id: Int) {
         game_activity_text_time_counter.setTextColor(ContextCompat.getColor(applicationContext, id))
     }
 
@@ -96,7 +87,11 @@ abstract class GameActivity : AppCompatActivity(), View.OnClickListener {
 
     private fun runNextRoundOrEndGame() {
         if (roundsLeft == 0) {
-            player.stop()
+            if(isPlayerInitialized){
+                player.stop()
+                player.release()
+                isPlayerInitialized= false
+            }
             endGame()
         } else {
             runNextStage()
@@ -105,23 +100,18 @@ abstract class GameActivity : AppCompatActivity(), View.OnClickListener {
 
     open fun endGame() {
         buttonsVisibility(View.INVISIBLE)
-//        game_activity_button_back.isClickable = true
-//        game_activity_button_back.visibility = VISIBLE
-//        game_activity_image_play_again.visibility = VISIBLE
         displayScore()
     }
 
-    fun displayScore() {
+    open fun displayScore() {
         changeCounterColor(R.color.colorGoodAnswer)
         game_activity_text_time_counter.text = getString(R.string.game_activity_text_score)
         game_activity_text_time_counter.textSize = 40F
         game_activity_text_round_result.textSize = 120F
-        setRoundResultText(game.getScore().toString(),
-            R.color.colorGoodAnswer
-        )
+        setRoundResultText(game.getScore().toString(), R.color.colorGoodAnswer)
     }
 
-    private fun setRoundResultText(text: String, colorId: Int) {
+    fun setRoundResultText(text: String, colorId: Int) {
         game_activity_text_round_result.text = text
         game_activity_text_round_result.setTextColor(ContextCompat.getColor(applicationContext, colorId))
     }
@@ -140,8 +130,11 @@ abstract class GameActivity : AppCompatActivity(), View.OnClickListener {
     open fun startBreak() {
         buttonsVisibility(VISIBLE)
         buttonsBlockade(true)
-        player.stop()
-        sumUpRound()
+        if(isPlayerInitialized){
+            player.stop()
+            player.release()
+            isPlayerInitialized= false
+        }
         countTime(game.getBreakTime().toLong())
     }
 
@@ -151,35 +144,41 @@ abstract class GameActivity : AppCompatActivity(), View.OnClickListener {
         }
     }
 
-    fun sumUpRound() {
-        val isAnswerCorrect = isAnswerCorrect()
-        if (isAnswerCorrect==true) {
-            game.addPoints(getPointsAmount())
-            setRoundResultText(getString(R.string.game_avtivity_answer_good),
-                R.color.colorGoodAnswer
-            )
-            getSelectedButton()!!.background = resources.getDrawable(R.drawable.answers_buttons_good_answer,null)
-        } else if (isAnswerCorrect==false){
-            setRoundResultText(getString(R.string.game_avtivity_answer_bad),
-                R.color.colorBadAnswer
-            )
-            getSelectedButton()!!.background = resources.getDrawable(R.drawable.answers_buttons_bad_answer,null)
-            buttons.find { x -> x.text == game.getActualSong()!!.getFairyTale() }!!
-                .background = resources.getDrawable(R.drawable.answers_buttons_good_answer,null)
-        } else {
-            setRoundResultText(getString(R.string.game_avtivity_answer_bad),
-                R.color.colorBadAnswer
-            )
-            buttons.find { x -> x.text == game.getActualSong()!!.getFairyTale() }!!
-                .background = resources.getDrawable(R.drawable.answers_buttons_good_answer,null)
+    open fun sumUpRound() {
+        when (isAnswerCorrect()) {
+            true -> {
+                game.addPoints(getPointsAmount())
+                setRoundResultText(
+                    getString(R.string.game_activity_answer_good),
+                    R.color.colorGoodAnswer
+                )
+                getSelectedButton()!!.background = resources.getDrawable(R.drawable.answers_buttons_good_answer, null)
+            }
+            false -> {
+                setRoundResultText(
+                    getString(R.string.game_activity_answer_bad),
+                    R.color.colorBadAnswer
+                )
+                getSelectedButton()!!.background = resources.getDrawable(R.drawable.answers_buttons_bad_answer, null)
+                buttons.find { x -> x.text == game.getActualSong()!!.getFairyTale() }!!
+                    .background = resources.getDrawable(R.drawable.answers_buttons_good_answer, null)
+            }
+            else -> {
+                setRoundResultText(
+                    getString(R.string.game_activity_answer_bad),
+                    R.color.colorBadAnswer
+                )
+                buttons.find { x -> x.text == game.getActualSong()!!.getFairyTale() }!!
+                    .background = resources.getDrawable(R.drawable.answers_buttons_good_answer, null)
+            }
         }
     }
 
-    private fun isAnswerCorrect(): Boolean? {
-        val selectedButton =getSelectedButton()
-        return if(selectedButton==null){
+    fun isAnswerCorrect(): Boolean? {
+        val selectedButton = getSelectedButton()
+        return if (selectedButton == null) {
             null
-        }else{
+        } else {
             selectedButton.text == game.getActualSong()!!.getFairyTale()
         }
     }
@@ -188,7 +187,7 @@ abstract class GameActivity : AppCompatActivity(), View.OnClickListener {
         return 1.0
     }
 
-    private fun getSelectedButton(): Button? {
+    fun getSelectedButton(): Button? {
         return buttons.find { x -> x.isSelected }
     }
 
@@ -197,14 +196,13 @@ abstract class GameActivity : AppCompatActivity(), View.OnClickListener {
         buttonsBlockade(false)
         buttonsVisibility(VISIBLE)
 
-        initializeRound()
         player.start()
         countTime(game.getRoundTime().toLong())
     }
 
     fun prepareButtonAndTextsAfterBreak() {
         for (button in buttons) {
-            button.background = resources.getDrawable(R.drawable.answers_buttons,null)
+            button.background = resources.getDrawable(R.drawable.answers_buttons, null)
             button.isSelected = false
         }
         game_activity_text_round_result.text = ""
@@ -213,19 +211,20 @@ abstract class GameActivity : AppCompatActivity(), View.OnClickListener {
     fun initializeRound() {
         val answers = game.initializeRound()
         val name = game.getActualSong()!!.getFilePath()
+        isPlayerInitialized = true
         player = MediaPlayer.create(applicationContext, resources.getIdentifier(name, "raw", packageName))
         showAvailableAnswers(answers)
     }
 
-    private fun showAvailableAnswers(answers: ArrayList<String>) {
+    fun showAvailableAnswers(answers: ArrayList<String>) {
         for (i in 0..3) {
             buttons[i].text = answers[i]
         }
     }
 
     override fun onStop() {
-        player.stop()
-        counter.cancel()
+//        player.stop()
+//        counter.cancel()
         super.onStop()
     }
 
@@ -237,6 +236,7 @@ abstract class GameActivity : AppCompatActivity(), View.OnClickListener {
 
     override fun onClick(v: View?) {
         buttons.find { x -> x.id == v!!.id }!!.isSelected = true
+        sumUpRound()
         counter.cancel()
         isRound = false
         startBreak()

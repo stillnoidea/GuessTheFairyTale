@@ -3,8 +3,8 @@
     <string name="main_activity_button_multi">Gra wieloosobowa</string>
     <string name="main_activity_button_single">Gra pojedyncza</string>
     <string name="game_activity_back_button">Powrót</string>
-    <string name="game_avtivity_answer_good">DOBRZE!</string>
-    <string name="game_avtivity_answer_bad">ŹLE!</string>
+    <string name="game_activity_answer_good">DOBRZE!</string>
+    <string name="game_activity_answer_bad">ŹLE!</string>
     <string name="game_activity_text_score">Wynik</string>
     <string name="tutorial_activity_text">Gra polega na odgadnięciu tytułu bajki, z której pochodzi puszczana piosenka.
         Wyświetlane są 4 tytuły, każda runda trwa max 30 sekund i kończy się kiedy licznik czasu dojdzie do 0
@@ -14,7 +14,17 @@
     <string name="default_no_image_found">Nie znaleziono obrazu</string>
     <string name="main_activity_button_tutorial">Instrukcja</string>
     <string name="main_activity_button_logout">Wyloguj</string>
-    <string name="tutorial_activity_text_shake">Potrząśnij, aby wykluczyć dwie odpowiedzi</string>
+    <string name="tutorial_activity_text_shake">Potrząśnij, aby wykluczyć dwie odpowiedzi w trybie singleplayer</string>
     <string name="login_toolbar_button_register">Register</string>
     <string name="login_button_text">Zaloguj</string>
+    <string name="result_you_lost">Przegrałeś!</string>
+    <string name="result_you_won">Wygrałeś!</string>
+    <string name="result_draw">Remis!</string>
+    <string name="results">Wyniki\nTy: %d\nPrzeciwnik: %d</string>
+    <string name="multiplayer_opponent_was_faster">Przeciwnik odpowiedział szybciej!</string>
+    <string name="multiplayer_is_ready">Gotowy?</string>
+    <string name="multiplayer_waiting_for_opponent">Oczekiwanie na drugiego gracza</string>
+    <string name="multiplayer_lets_start">Zaczynamy!</string>
+    <string name="multiplayer_second_player_left">Drugi gracz opuścił grę :(</string>
+
 </resources>

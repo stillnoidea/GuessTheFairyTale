@@ -76,13 +76,15 @@ class FirebaseDatabaseManager {
         database.child("gameRoom").child(user.id).setValue(gc).addOnCompleteListener {
             database.child("gameRoom").child(user.id).addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
-                    val match = dataSnapshot.value as HashMap<String, String>
-                    if (match["playerTwoId"] != "") {
-                        database.child("gameRoom").child(user.id).removeValue()
-                        database.child("gameRoom").child(user.id).removeEventListener(this)
-                        callback.onCallback(true)
-                    } else {
-                        callback.onCallback(false)
+                    if (dataSnapshot.value != null) {
+                        val match = dataSnapshot.value as HashMap<String, String>
+                        if (match["playerTwoId"] != "") {
+                            database.child("gameRoom").child(user.id).removeValue()
+                            database.child("gameRoom").child(user.id).removeEventListener(this)
+                            callback.onCallback(true)
+                        } else {
+                            callback.onCallback(false)
+                        }
                     }
                 }
 
@@ -100,11 +102,12 @@ class FirebaseDatabaseManager {
     fun listenForGameData(playerOneId: String, callback: DatabaseCallback) {
         val gameDataListener = (object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
-                if(dataSnapshot.value!=null){
+                if (dataSnapshot.value != null) {
                     print(dataSnapshot)
                     val dbData = dataSnapshot.getValue<GameDTO>()
                     val round = dataSnapshot.child("rounds").getValue<ArrayList<Round>>()
                     dbData!!.rounds = round!!
+                    database.child("game").child(dataSnapshot.key!!).removeEventListener(this)
                     callback.onCallback(dbData, dataSnapshot.key!!)
                 }
             }
@@ -114,5 +117,94 @@ class FirebaseDatabaseManager {
             }
         })
         database.child("game").child(playerOneId).addValueEventListener(gameDataListener)
+    }
+
+    fun deletePlayerData(firstPlayerId:String) {
+        database.child("gameRoom").child(firstPlayerId).removeValue()
+        database.child("game").child(firstPlayerId).removeValue()
+    }
+
+    fun listenForPlayersStandby(playerOneId: String, callback: DatabaseCallback) {
+        val playersListener = (object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                if (dataSnapshot.value != null) {
+                    val gameData = dataSnapshot.getValue<GameDTO>()
+                    if (gameData!!.p1Ready && gameData.p2Ready) {
+                        database.child("game").child(playerOneId).removeEventListener(this)
+                        callback.onCallback(true)
+                    }
+                }
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                Log.w(TAG, "loadPost:onCancelled", databaseError.toException())
+            }
+        })
+        database.child("game").child(playerOneId).addValueEventListener(playersListener)
+    }
+
+    fun notifyPlayerStandby(playerOneId: String, playerNoID: String, callback: DatabaseCallback) {
+        database.child("game").child(playerOneId).addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                if (dataSnapshot.value == null) {
+                    callback.onCallback(false)
+                } else {
+                    database.child("game").child(playerOneId).child(playerNoID).setValue(true)
+                }
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                Log.w(TAG, "loadPost:onCancelled", databaseError.toException())
+            }
+        })
+    }
+
+    fun listenForRoundChange(playerOneId: String, callback: DatabaseCallback): ValueEventListener {
+        var noOfChange = 0
+        val roundListener = (object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                if (noOfChange > 0) {
+                    if (dataSnapshot.value != null) {
+                        val gameData = dataSnapshot.getValue<GameDTO>()
+                        if (gameData!!.roundsLeft == 0) {
+                            database.child("game").child(playerOneId).removeEventListener(this)
+                        }
+                        callback.onCallback(gameData.p1Score, gameData.p2Score)
+                    }
+                }
+                noOfChange++
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                Log.w(TAG, "loadPost:onCancelled", databaseError.toException())
+            }
+        })
+        database.child("game").child(playerOneId).addValueEventListener(roundListener)
+        return roundListener
+    }
+
+    fun updateGamePoints(playerOneId: String, p1Points: Int, p2Points: Int, roundsLeft: Int, callback: DatabaseCallback) {
+        database.child("game").child(playerOneId).addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                if (dataSnapshot.value == null) {
+                        callback.onCallback(false)
+                } else {
+                    val childUpdates = HashMap<String, Int>()
+                    childUpdates["p1Score"] = p1Points
+                    childUpdates["p2Score"] = p2Points
+                    childUpdates["roundsLeft"] = roundsLeft
+
+                    database.child("game").child(playerOneId).updateChildren(childUpdates as Map<String, Any>)
+                }
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                Log.w(TAG, "loadPost:onCancelled", databaseError.toException())
+            }
+        })
+    }
+
+    fun removeGameListener(listener: ValueEventListener, playerOneId: String) {
+        database.child("game").child(playerOneId).removeEventListener(listener)
     }
 }
