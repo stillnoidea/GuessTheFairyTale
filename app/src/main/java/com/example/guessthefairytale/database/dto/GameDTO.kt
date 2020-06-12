@@ -4,7 +4,7 @@ import com.example.guessthefairytale.gamelogic.Round
 
 data class GameDTO(
     val roundsNo: Int,
-    var actualRound: Int,
+    var roundsLeft: Int,
     var rounds: List<Round>,
     var p1Score: Int,
     var p2Score: Int,
