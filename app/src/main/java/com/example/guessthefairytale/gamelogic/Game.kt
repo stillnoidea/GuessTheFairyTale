@@ -32,6 +32,10 @@ class Game {
         roundsNumber = number
     }
 
+    fun setActualSong(song: Song) {
+        actualSong = song
+    }
+
     fun addPoints(points: Double) {
         if (score < roundsNumber) {
             score += points
