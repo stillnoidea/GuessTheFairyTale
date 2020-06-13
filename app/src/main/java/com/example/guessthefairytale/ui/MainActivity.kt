@@ -2,7 +2,7 @@ package com.example.guessthefairytale.ui
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.example.guessthefairytale.R
@@ -12,7 +12,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 
 
 class MainActivity : AppCompatActivity() {
-    private var user = User("","","",0)
+    private var user = User("", "", "", 0)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,6 +34,11 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(findViewById(R.id.main_toolbar))
         user = intent.getSerializableExtra("user") as User
 
+        onBackPressedDispatcher.addCallback(object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                logout()
+            }
+        })
     }
 
     private fun startMultiGame() {
@@ -76,6 +81,7 @@ class MainActivity : AppCompatActivity() {
             .addOnCompleteListener {
                 val intent = Intent(this, LoginActivity::class.java)
                 startActivity(intent)
+                finish()
             }
     }
 

@@ -64,6 +64,7 @@ class Singleplayer : GameActivity(), ShakeDetector.Listener {
 
         super.initializeRound()
         super.player.start()
+        isPlayerInitialized = true
         super.countTime(game.getRoundTime().toLong())
     }
 
@@ -81,8 +82,11 @@ class Singleplayer : GameActivity(), ShakeDetector.Listener {
 
     override fun onStop() {
         super.onStop()
-        player.release()
-        counter.cancel()
+        if (isPlayerInitialized) {
+            player.release()
+            counter.cancel()
+            isPlayerInitialized = false
+        }
     }
 
     override fun hearShake() {

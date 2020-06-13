@@ -26,5 +26,6 @@
     <string name="multiplayer_waiting_for_opponent">Oczekiwanie na drugiego gracza</string>
     <string name="multiplayer_lets_start">Zaczynamy!</string>
     <string name="multiplayer_second_player_left">Drugi gracz opuścił grę :(</string>
+    <string name="multiplayer_nobody_answered">Nikt nie odpowiedział</string>
 
 </resources>

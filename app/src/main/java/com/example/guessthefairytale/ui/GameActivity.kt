@@ -4,6 +4,7 @@ import android.content.Intent
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.CountDownTimer
+import android.util.Log
 import android.view.View
 import android.view.View.VISIBLE
 import android.widget.Button
@@ -27,8 +28,20 @@ abstract class GameActivity : AppCompatActivity(), View.OnClickListener {
     var isPlayerInitialized: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        Log.i("Multi", "${this.hashCode()} [GameAct] onCreate")
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_game)
+    }
+
+    fun releaseGame() {
+        if (isCounterInitialized) {
+            counter.cancel()
+        }
+        if (isPlayerInitialized) {
+            player.stop()
+            player.release()
+            isPlayerInitialized = false
+        }
     }
 
     fun initializeRoundsNumber() {
@@ -86,11 +99,12 @@ abstract class GameActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun runNextRoundOrEndGame() {
+        Log.i("Multi", "${this.hashCode()} [GameAct] runNextRoundOrEndGame")
         if (roundsLeft == 0) {
-            if(isPlayerInitialized){
+            if (isPlayerInitialized) {
                 player.stop()
                 player.release()
-                isPlayerInitialized= false
+                isPlayerInitialized = false
             }
             endGame()
         } else {
@@ -128,12 +142,13 @@ abstract class GameActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     open fun startBreak() {
+        sumUpRound()
         buttonsVisibility(VISIBLE)
         buttonsBlockade(true)
-        if(isPlayerInitialized){
+        if (isPlayerInitialized) {
             player.stop()
             player.release()
-            isPlayerInitialized= false
+            isPlayerInitialized = false
         }
         countTime(game.getBreakTime().toLong())
     }
@@ -197,7 +212,14 @@ abstract class GameActivity : AppCompatActivity(), View.OnClickListener {
         buttonsVisibility(VISIBLE)
 
         player.start()
+        isPlayerInitialized = true
         countTime(game.getRoundTime().toLong())
+    }
+
+    override fun onDestroy() {
+        Log.i("Multi", "${this.hashCode()} [GameAct] onDestroy")
+        isPlayerInitialized
+        super.onDestroy()
     }
 
     fun prepareButtonAndTextsAfterBreak() {
@@ -223,12 +245,20 @@ abstract class GameActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     override fun onStop() {
-//        player.stop()
-//        counter.cancel()
+        Log.i("Multi", "${this.hashCode()} [GameAct] onStop")
+        if (isPlayerInitialized) {
+            player.stop()
+            player.release()
+            isPlayerInitialized = false
+        }
+        if (isCounterInitialized) {
+            counter.cancel()
+        }
         super.onStop()
     }
 
     override fun onRestart() {
+        Log.i("Multi", "${this.hashCode()} [GameAct] onRestart")
         val intent = Intent(this, MainActivity::class.java)
         startActivity(intent)
         super.onRestart()
@@ -236,7 +266,6 @@ abstract class GameActivity : AppCompatActivity(), View.OnClickListener {
 
     override fun onClick(v: View?) {
         buttons.find { x -> x.id == v!!.id }!!.isSelected = true
-        sumUpRound()
         counter.cancel()
         isRound = false
         startBreak()

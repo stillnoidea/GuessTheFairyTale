@@ -2,9 +2,9 @@ package com.example.guessthefairytale.ui
 
 import android.media.MediaPlayer
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.view.View.VISIBLE
-import androidx.activity.OnBackPressedCallback
 import com.example.guessthefairytale.R
 import com.example.guessthefairytale.database.FirebaseDatabaseManager
 import com.example.guessthefairytale.database.dto.DatabaseCallback
@@ -14,7 +14,7 @@ import com.example.guessthefairytale.gamelogic.Round
 import com.google.firebase.database.ValueEventListener
 import kotlinx.android.synthetic.main.activity_game.*
 
-class Multiplayer(enabled: Boolean) : GameActivity() {
+class Multiplayer : GameActivity() {
     private var user = User("", "", "", 0)
     private var firstPlayerId = ""
     private var playerNo = ""
@@ -24,10 +24,16 @@ class Multiplayer(enabled: Boolean) : GameActivity() {
     private var p1Score: Int = 0
     private var p2Score: Int = 0
     private var gameListener: Any? = null
+    private var standbyListener: Any? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_multiplayer)
+        setSupportActionBar(findViewById(R.id.main_toolbar))
+
+        user = intent.getSerializableExtra("user") as User
+        searchGame()
+
         game_activity_image_play_again.visibility = View.INVISIBLE
         game_activity_button_back.isClickable = false
         game_activity_button_back.visibility = View.INVISIBLE
@@ -38,17 +44,8 @@ class Multiplayer(enabled: Boolean) : GameActivity() {
         }
         super.buttonsVisibility(View.INVISIBLE)
 
-        setSupportActionBar(findViewById(R.id.main_toolbar))
+        Log.i("Multi", "${this.hashCode()} onCreate")
 
-        user = intent.getSerializableExtra("user") as User
-        searchGame()
-
-        onBackPressedDispatcher.addCallback(object : OnBackPressedCallback(true){
-            override fun handleOnBackPressed() {
-                onStop()
-                onDestroy()
-            }
-        })
     }
 
     private fun searchGame() {
@@ -62,6 +59,7 @@ class Multiplayer(enabled: Boolean) : GameActivity() {
                     FirebaseDatabaseManager().addGameChallenge(user, object : DatabaseCallback {
                         override fun onCallback(value: Any, sndValue: Any) {
                             if (value as Boolean) {
+                                firstPlayerId = user.id
                                 startGameAsFirstPlayer()
                             }
                         }
@@ -84,7 +82,6 @@ class Multiplayer(enabled: Boolean) : GameActivity() {
     }
 
     private fun startGameAsFirstPlayer() {
-        firstPlayerId = user.id
         playerNo = "p1"
         sndPlayerNo = "p2"
         FirebaseDatabaseManager().uploadGameData(prepareGameData(), user.id)
@@ -92,6 +89,7 @@ class Multiplayer(enabled: Boolean) : GameActivity() {
     }
 
     private fun prepareGameData(): GameDTO {
+        Log.i("Multi", "${this.hashCode()} prepareGameData")
         gameData = GameDTO(0, 0, arrayListOf(), 0, 0, p1Ready = false, p2Ready = false)
         val rounds: ArrayList<Round> = arrayListOf()
         rounds.ensureCapacity(5)
@@ -118,26 +116,23 @@ class Multiplayer(enabled: Boolean) : GameActivity() {
         buttons[2].background = resources.getDrawable(R.drawable.answers_buttons_diabled)
     }
 
-    override fun onPause() {
-        super.onPause()
-        onStop()
-    }
-
     override fun onStop() {
         super.onStop()
-        if (isPlayerInitialized) {
-            player.stop()
-            player.release()
-            isPlayerInitialized = false
-        }
-        if (isCounterInitialized) {
-            counter.cancel()
-        }
+        Log.i("Multi", "${this.hashCode()} onStop")
+        releaseGame()
         if (gameListener != null) {
             FirebaseDatabaseManager().removeGameListener(gameListener as ValueEventListener, firstPlayerId)
         }
+        if (standbyListener != null) {
+            FirebaseDatabaseManager().removeGameListener(standbyListener as ValueEventListener, firstPlayerId)
+        }
         FirebaseDatabaseManager().deletePlayerData(firstPlayerId)
-        finish()
+    }
+
+    override fun onDestroy() {
+        gameData
+        Log.i("Multi", "${this.hashCode()} onDestroy")
+        super.onDestroy()
     }
 
     override fun onClick(v: View?) {
@@ -151,42 +146,43 @@ class Multiplayer(enabled: Boolean) : GameActivity() {
     private fun playerIsReady() {
         game_activity_text_round_result.text =
             "${getString(R.string.multiplayer_lets_start)} \n ${getString(R.string.multiplayer_waiting_for_opponent)}"
-        FirebaseDatabaseManager().listenForPlayersStandby(firstPlayerId, object : DatabaseCallback {
+        game_activity_button_answer3.isEnabled = false
+        standbyListener = FirebaseDatabaseManager().listenForPlayersStandby(firstPlayerId, object : DatabaseCallback {
             override fun onCallback(value: Any, sndValue: Any) {
+                Log.i("Multi", "${this.hashCode()} onDestroy")
                 game_activity_text_round_result.text = getString(R.string.multiplayer_lets_start)
                 if (value as Boolean) {
                     gameListener =
                         FirebaseDatabaseManager().listenForRoundChange(firstPlayerId, object : DatabaseCallback {
                             override fun onCallback(value: Any, sndValue: Any) {
-                                if (p1Score != value || p2Score != sndValue || (p1Score == 0 && p2Score == 0)) {
-                                    p1Score = value as Int
-                                    p2Score = sndValue as Int
-                                    counter.cancel()
-                                    isRound = false
-                                    buttonsVisibility(View.VISIBLE)
-                                    buttonsBlockade(true)
-                                    if (isPlayerInitialized) {
-                                        player.stop()
-                                        player.release()
-                                        isPlayerInitialized = false
-                                    }
-                                    setRoundResultText(
-                                        getString(R.string.multiplayer_opponent_was_faster),
-                                        R.color.colorBadAnswer
-                                    )
-                                    countTime(game.getBreakTime().toLong())
-                                }
+                                onOpponentAnswerSelected(value as Int, sndValue as Int)
                             }
                         })
+                    game_activity_button_answer3.isEnabled = true
                     startGame()
                 }
             }
         })
         FirebaseDatabaseManager().notifyPlayerStandby(firstPlayerId, playerNo + "Ready", object : DatabaseCallback {
             override fun onCallback(value: Any, sndValue: Any) {
-                endGameAsSndPlayerLeft()
+                if (!(value as Boolean)) {
+                    endGameAsSndPlayerLeft()
+                }
             }
         })
+    }
+
+    private fun onOpponentAnswerSelected(value: Int, sndValue: Int){
+        if (p1Score != value || p2Score != sndValue || (p1Score == 0 && p2Score == 0)) {
+            p1Score = value
+            p2Score = sndValue
+            isRound = false
+            buttonsVisibility(View.VISIBLE)
+            buttonsBlockade(true)
+            releaseGame()
+            setRoundResultText(getString(R.string.multiplayer_opponent_was_faster),R.color.colorBadAnswer)
+            countTime(game.getBreakTime().toLong())
+        }
     }
 
     override fun sumUpRound() {
@@ -201,18 +197,13 @@ class Multiplayer(enabled: Boolean) : GameActivity() {
                     })
 
                 super.setRoundResultText(
-                    getString(R.string.game_activity_answer_good) + " +1 dla ciebie",
-                    R.color.colorGoodAnswer
+                    getString(R.string.game_activity_answer_good) + " +1 dla ciebie", R.color.colorGoodAnswer
                 )
                 getSelectedButton()!!.background = resources.getDrawable(R.drawable.answers_buttons_good_answer, null)
             }
             false -> {
                 updatePoints(sndPlayerNo)
-                FirebaseDatabaseManager().updateGamePoints(
-                    firstPlayerId,
-                    p1Score,
-                    p2Score,
-                    roundsLeft,
+                FirebaseDatabaseManager().updateGamePoints(firstPlayerId, p1Score, p2Score, roundsLeft,
                     object : DatabaseCallback {
                         override fun onCallback(value: Any, sndValue: Any) {
                             endGameAsSndPlayerLeft()
@@ -220,18 +211,14 @@ class Multiplayer(enabled: Boolean) : GameActivity() {
                     })
 
                 setRoundResultText(
-                    getString(R.string.game_activity_answer_bad) + " +1 dla przeciwnika",
-                    R.color.colorBadAnswer
+                    getString(R.string.game_activity_answer_bad) + " +1 dla przeciwnika", R.color.colorBadAnswer
                 )
                 getSelectedButton()!!.background = resources.getDrawable(R.drawable.answers_buttons_bad_answer, null)
                 buttons.find { x -> x.text == game.getActualSong()!!.getFairyTale() }!!
                     .background = resources.getDrawable(R.drawable.answers_buttons_good_answer, null)
             }
             else -> {
-                setRoundResultText(
-                    getString(R.string.game_activity_answer_bad),
-                    R.color.colorBadAnswer
-                )
+                setRoundResultText(getString(R.string.multiplayer_nobody_answered), R.color.colorBadAnswer)
                 buttons.find { x -> x.text == game.getActualSong()!!.getFairyTale() }!!
                     .background = resources.getDrawable(R.drawable.answers_buttons_good_answer, null)
             }
@@ -248,14 +235,8 @@ class Multiplayer(enabled: Boolean) : GameActivity() {
     }
 
     private fun endGameAsSndPlayerLeft() {
-        if (isCounterInitialized) {
-            counter.cancel()
-        }
-        if (isPlayerInitialized) {
-            player.stop()
-            player.release()
-            isPlayerInitialized = false
-        }
+        Log.i("Multi", "${this.hashCode()} endGameAsSndPlayerLeft")
+        this.releaseGame()
         buttonsVisibility(View.INVISIBLE)
         game_activity_button_back.isClickable = true
         game_activity_button_back.visibility = VISIBLE
@@ -268,6 +249,7 @@ class Multiplayer(enabled: Boolean) : GameActivity() {
 
     override fun startRound() {
         val roundNo = roundsNo - roundsLeft - 1
+        Log.i("Multi", "${this.hashCode()} startRound $roundNo")
         game.setActualSong(gameData.rounds[roundNo].currentSong)
         val name = gameData.rounds[roundNo].currentSong.getFilePath()
         isPlayerInitialized = true
@@ -278,6 +260,7 @@ class Multiplayer(enabled: Boolean) : GameActivity() {
 
     override fun endGame() {
         super.endGame()
+        Log.i("Multi", "${this.hashCode()} endGame")
         game_activity_button_back.isClickable = true
         game_activity_button_back.visibility = VISIBLE
         game_activity_image_play_again.visibility = VISIBLE
@@ -319,8 +302,8 @@ class Multiplayer(enabled: Boolean) : GameActivity() {
         setRoundResultText(getString(R.string.results, firstScore, secondScore), color)
     }
 
-
     fun goBack(v: View) {
-        onBackPressed()
+        super.onBackPressed()
+        this.finish()
     }
 }

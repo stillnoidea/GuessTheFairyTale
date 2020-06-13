@@ -72,7 +72,6 @@ class FirebaseDatabaseManager {
     fun addGameChallenge(user: User, callback: DatabaseCallback) {
         val gc = GameChallenge(user.id, "")
 
-
         database.child("gameRoom").child(user.id).setValue(gc).addOnCompleteListener {
             database.child("gameRoom").child(user.id).addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
@@ -103,6 +102,7 @@ class FirebaseDatabaseManager {
         val gameDataListener = (object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 if (dataSnapshot.value != null) {
+                    Log.i("Multi","[Firebase] listenForGameData")
                     print(dataSnapshot)
                     val dbData = dataSnapshot.getValue<GameDTO>()
                     val round = dataSnapshot.child("rounds").getValue<ArrayList<Round>>()
@@ -119,15 +119,26 @@ class FirebaseDatabaseManager {
         database.child("game").child(playerOneId).addValueEventListener(gameDataListener)
     }
 
-    fun deletePlayerData(firstPlayerId:String) {
-        database.child("gameRoom").child(firstPlayerId).removeValue()
-        database.child("game").child(firstPlayerId).removeValue()
+    fun deletePlayerData(firstPlayerId: String) {
+        database.child("game").child(firstPlayerId).addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                if (dataSnapshot.value != null) {
+                    database.child("gameRoom").child(firstPlayerId).removeValue()
+                    database.child("game").child(firstPlayerId).removeValue()
+                }
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                Log.w(TAG, "loadPost:onCancelled", databaseError.toException())
+            }
+        })
     }
 
-    fun listenForPlayersStandby(playerOneId: String, callback: DatabaseCallback) {
+    fun listenForPlayersStandby(playerOneId: String, callback: DatabaseCallback): ValueEventListener {
         val playersListener = (object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 if (dataSnapshot.value != null) {
+                    Log.i("Multi","[Firebase] listenForPlayersStandby")
                     val gameData = dataSnapshot.getValue<GameDTO>()
                     if (gameData!!.p1Ready && gameData.p2Ready) {
                         database.child("game").child(playerOneId).removeEventListener(this)
@@ -141,14 +152,17 @@ class FirebaseDatabaseManager {
             }
         })
         database.child("game").child(playerOneId).addValueEventListener(playersListener)
+        return playersListener
     }
 
     fun notifyPlayerStandby(playerOneId: String, playerNoID: String, callback: DatabaseCallback) {
         database.child("game").child(playerOneId).addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
+                Log.i("Multi","[Firebase] notifyPlayerStandby")
                 if (dataSnapshot.value == null) {
                     callback.onCallback(false)
                 } else {
+                    callback.onCallback(true)
                     database.child("game").child(playerOneId).child(playerNoID).setValue(true)
                 }
             }
@@ -163,6 +177,7 @@ class FirebaseDatabaseManager {
         var noOfChange = 0
         val roundListener = (object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
+                Log.i("Multi","[Firebase] listenForRoundChange")
                 if (noOfChange > 0) {
                     if (dataSnapshot.value != null) {
                         val gameData = dataSnapshot.getValue<GameDTO>()
@@ -183,15 +198,16 @@ class FirebaseDatabaseManager {
         return roundListener
     }
 
-    fun updateGamePoints(playerOneId: String, p1Points: Int, p2Points: Int, roundsLeft: Int, callback: DatabaseCallback) {
+    fun updateGamePoints(playerOneId: String, p1Pnt: Int, p2Pnt: Int, roundsLeft: Int, callback: DatabaseCallback) {
         database.child("game").child(playerOneId).addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 if (dataSnapshot.value == null) {
-                        callback.onCallback(false)
+                    callback.onCallback(false)
                 } else {
+                    Log.i("Multi","[Firebase] updateGamePoints")
                     val childUpdates = HashMap<String, Int>()
-                    childUpdates["p1Score"] = p1Points
-                    childUpdates["p2Score"] = p2Points
+                    childUpdates["p1Score"] = p1Pnt
+                    childUpdates["p2Score"] = p2Pnt
                     childUpdates["roundsLeft"] = roundsLeft
 
                     database.child("game").child(playerOneId).updateChildren(childUpdates as Map<String, Any>)
